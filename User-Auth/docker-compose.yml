@@ -1,0 +1,47 @@
+services:
+  discovery:
+    container_name: discovery-tpm
+    image: openjdk:17-jdk-slim
+    working_dir: /app
+    volumes:
+      - ./discovery/target/discovery-0.0.1-SNAPSHOT.jar:/app/discovery.jar
+    command: java -jar discovery.jar
+    ports:
+      - 8761:8761
+    networks:
+      - spring-demo
+    depends_on:
+      - postgres
+    restart: unless-stopped
+  postgres:
+    container_name: postgres-sql-tpm
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: users_auth_db
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - spring-demo
+    restart: unless-stopped
+  mail-dev:
+    container_name: mail-dev-tpm
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+
+
+networks:
+  spring-demo:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
+
+
