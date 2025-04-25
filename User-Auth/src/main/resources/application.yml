@@ -5,29 +5,22 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
-
-
-server:
-  port: 8090
 spring:
   application:
     name: user-auth
   config:
     import: optional:configserver:http://localhost:8888
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/users_auth_db
-    username: username
-    password: password
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-
+  cloud:
+    config:
+      fail-fast: false
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 50MB
+springdoc:
+  default-produces-media-type: application/json
+server:
+  servlet:
+    context-path: /api/v1/
 
