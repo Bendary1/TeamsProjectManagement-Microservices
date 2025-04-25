@@ -18,9 +18,17 @@ spring:
   servlet:
     multipart:
       max-file-size: 50MB
+
 springdoc:
   default-produces-media-type: application/json
+
 server:
   servlet:
     context-path: /api/v1/
+
+application:
+  mailing:
+    frontend:
+      activation-url: http://localhost:8080/activate-account
+      reset-password-url: http://localhost:8080/reset-password
 

@@ -40,6 +40,9 @@ public class AuthenticationService {
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
 
+    @Value("${application.mailing.frontend.reset-password-url}")
+    private String resetPasswordUrl;
+
     public void register(RegistrationRequest request) throws MessagingException {
         var userRole = roleRepository.findByName("USER")
                 // todo - better exception handling
@@ -127,6 +130,64 @@ public class AuthenticationService {
         var user = userRepository.findById(savedToken.getUser().getId())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         user.setEnabled(true);
+        userRepository.save(user);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
+    }
+
+    public void forgotPassword(ForgotPasswordRequest request) throws MessagingException {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        sendResetPasswordEmail(user);
+    }
+
+    private void sendResetPasswordEmail(User user) throws MessagingException {
+        var newToken = generateAndSaveResetToken(user);
+
+        emailService.sendEmail(
+                user.getEmail(),
+                user.fullName(),
+                EmailTemplateName.RESET_PASSWORD,
+                resetPasswordUrl,
+                newToken,
+                "Reset your password"
+        );
+    }
+
+    private String generateAndSaveResetToken(User user) {
+        String generatedToken = generateActivationCode(6);
+        var token = Token.builder()
+                .token(generatedToken)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .user(user)
+                .build();
+        tokenRepository.save(token);
+        return generatedToken;
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalStateException("Passwords do not match");
+        }
+
+        Token savedToken = tokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            throw new RuntimeException("Reset token has expired");
+        }
+
+        if (savedToken.getValidatedAt() != null) {
+            throw new RuntimeException("Token has already been used");
+        }
+
+        var user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
         savedToken.setValidatedAt(LocalDateTime.now());

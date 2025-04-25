@@ -1,6 +1,5 @@
 package com.TPM.User.Auth.email;
 
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -35,34 +34,48 @@ public class EmailService {
             String activationCode,
             String subject
     ) throws MessagingException {
+        log.info("Attempting to send email to: {}", to);
+        log.info("Using template: {}", emailTemplate);
+        log.info("Confirmation URL: {}", confirmationUrl);
+        log.info("Activation code: {}", activationCode);
+
         String templateName;
         if (emailTemplate == null) {
             templateName = "confirm_email";
         } else {
             templateName = emailTemplate.name();
         }
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(
-                mimeMessage,
-                MULTIPART_MODE_MIXED,
-                UTF_8.name()
-        );
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("username", username);
-        properties.put("confirmationUrl", confirmationUrl);
-        properties.put("activation_code", activationCode);
+        log.info("Using template name: {}", templateName);
 
-        Context context = new Context();
-        context.setVariables(properties);
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    mimeMessage,
+                    MULTIPART_MODE_MIXED,
+                    UTF_8.name()
+            );
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("username", username);
+            properties.put("confirmationUrl", confirmationUrl);
+            properties.put("activation_code", activationCode);
 
-        helper.setFrom("contact@bendary.com");
-        helper.setTo(to);
-        helper.setSubject(subject);
+            Context context = new Context();
+            context.setVariables(properties);
 
-        String template = templateEngine.process(templateName, context);
+            helper.setFrom("contact@bendary.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
 
-        helper.setText(template, true);
+            String template = templateEngine.process(templateName, context);
+            log.info("Email template processed successfully");
 
-        mailSender.send(mimeMessage);
+            helper.setText(template, true);
+
+            mailSender.send(mimeMessage);
+            log.info("Email sent successfully to: {}", to);
+        } catch (Exception e) {
+            log.error("Failed to send email to: {}", to, e);
+            throw e;
+        }
     }
 }
