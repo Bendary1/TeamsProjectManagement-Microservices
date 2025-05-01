@@ -12,6 +12,7 @@
         <option value="$PROJECT_DIR$/gateway/pom.xml" />
         <option value="$PROJECT_DIR$/TPM-User-Auth-Service/pom.xml" />
         <option value="$PROJECT_DIR$/User-Auth/pom.xml" />
+        <option value="$PROJECT_DIR$/project-management-service/pom.xml" />
       </list>
     </option>
   </component>

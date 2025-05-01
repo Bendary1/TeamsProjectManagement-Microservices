@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/TeamsProjectManagement-Microservices.iml" filepath="$PROJECT_DIR$/.idea/TeamsProjectManagement-Microservices.iml" />
+      <module fileurl="file://$PROJECT_DIR$/project-management-service/project-management-service.iml" filepath="$PROJECT_DIR$/project-management-service/project-management-service.iml" />
     </modules>
   </component>
 </project>

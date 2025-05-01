@@ -29,6 +29,6 @@ server:
 application:
   mailing:
     frontend:
-      activation-url: http://localhost:8080/activate-account
-      reset-password-url: http://localhost:8080/reset-password
+      activation-url: http://localhost:8081/activate-account
+      reset-password-url: http://localhost:8081/reset-password
 

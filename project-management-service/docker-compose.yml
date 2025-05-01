@@ -1,0 +1,25 @@
+services:
+  postgres:
+    container_name: postgres-sql-tpm-pms
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: project_management_db
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5555:5432
+    networks:
+      - spring-demo
+    restart: unless-stopped
+networks:
+  spring-demo:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
+
+
