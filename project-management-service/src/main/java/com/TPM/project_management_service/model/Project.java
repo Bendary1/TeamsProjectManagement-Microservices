@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,7 +28,7 @@ public class Project {
     private String description;
 
     @Column(name = "owner_id", nullable = false)
-    private Long ownerId;
+    private Integer ownerId;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -34,15 +36,26 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Deprecated: Use ProjectMember entity instead
     @ElementCollection
     @CollectionTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "user_id")
-    private Set<Long> memberIds = new HashSet<>();
+    private Set<Integer> memberIds = new HashSet<>();
 
+    // Deprecated: Use ProjectMember entity instead
     @ElementCollection
     @CollectionTable(name = "project_admins", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "user_id")
-    private Set<Long> adminIds = new HashSet<>();
+    private Set<Integer> adminIds = new HashSet<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectMember> members = new ArrayList<>();
+
+    @OneToOne(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProjectCalendar calendar;
 
     @PrePersist
     protected void onCreate() {
@@ -53,4 +66,4 @@ public class Project {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-} 
+}
