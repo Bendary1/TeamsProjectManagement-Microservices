@@ -1,0 +1,96 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: project-management-service
+  config:
+    import: optional:configserver:http://localhost:8899
+  cloud:
+    config:
+      fail-fast: false
+    openfeign:
+      circuitbreaker:
+        enabled: true
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 50MB
+  datasource:
+    url: jdbc:postgresql://localhost:5555/project_management_db
+    username: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    user:
+      name: user
+      password: password
+      roles: USER
+  autoconfigure:
+    exclude: 
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioSpeechAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiImageAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiChatAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiAudioTranscriptionAutoConfiguration
+      - org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiModerationAutoConfiguration
+  ai:
+    openai:
+      chat:
+        base-url: https://generativelanguage.googleapis.com
+        completions-path: /v1beta/openai/chat/completions
+        api-key: AIzaSyCYuJJ_jCYCzSZ-qSGPszbTd1TfKl2Ad80
+        options:
+          model: gemini-2.0-flash
+springdoc:
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    config-url: /api/v1/v3/api-docs/swagger-config
+    url: /api/v1/v3/api-docs
+  api-docs:
+    path: /v3/api-docs
+  paths-to-match: /**
+server:
+  servlet:
+    context-path: /api/v1/
+  port: 8899
+
+application:
+  security:
+    jwt:
+      secret-key: cbd2fc3c8f5b764bd3afb4287f4c3797b5ffcff0349bdf47abee8b823a126e7a867ba3eb70f690a7e66016cc01b14d955acfc424a872b27e798aaa7b168494a9a35c87e21669a0e42d7a9ddf3a808ef57a0fdb9f93d343e60b937f89ece39cd151e3bdd3573067ca41aa3802e35b96adca67862d07cdb3032c8e13016e3313738ed2b8fb10722025f657912534385906a7beb6c307fd0ad5f189992108bd3c4c147bab78e543806e0e9b3a1623cd72aa0a7309f11eef8a01e42337b911d8a92f8a451999784a87da27d49228cbb8d27e47dd45796d0782889f8a26ed5b42750c1e81294e6caa2232a4e399a6cd824d31bad1b0939609b4386326179904957073
+      expiration: 86400000
+  config:
+    user-auth-url: http://localhost:8888/api/v1
+
+feign:
+  circuitbreaker:
+    enabled: true
+    # Optional advanced configuration
+    group:
+      default:
+        circuitBreakerConfig:
+          slidingWindowSize: 10
+          minimumNumberOfCalls: 5
+          permittedNumberOfCallsInHalfOpenState: 3
+          waitDurationInOpenState: 5000
+          failureRateThreshold: 50
+

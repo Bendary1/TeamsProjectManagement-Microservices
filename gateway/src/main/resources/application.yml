@@ -1,0 +1,25 @@
+eureka:
+  client:
+    register-with-eureka: false
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: projectmanagement
+          uri: http://localhost:8899
+          predicates:
+            - Path=/api/v1/**
+        - id: projectmanagement
+          uri: http://localhost:8888
+          predicates:
+            - Path=/api/v1/**
+  config:
+    import: optional:configserver:http://localhost:7777
+
+server:
+  port: 9999

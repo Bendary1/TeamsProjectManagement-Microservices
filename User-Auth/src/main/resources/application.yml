@@ -9,7 +9,7 @@ spring:
   application:
     name: user-auth
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://localhost:7777
   cloud:
     config:
       fail-fast: false
@@ -29,6 +29,6 @@ server:
 application:
   mailing:
     frontend:
-      activation-url: http://localhost:8081/activate-account
-      reset-password-url: http://localhost:8081/reset-password
+      activation-url: http://localhost:8080/activate-account
+      reset-password-url: http://localhost:8080/reset-password
 
